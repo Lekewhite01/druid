@@ -27,7 +27,7 @@ Quick start::
     druid.recommend(ds, results)
 """
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 from druid.core.config import AIConfig, DruidConfig
 from druid.core.dataset import DruidDataset
