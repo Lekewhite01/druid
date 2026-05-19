@@ -5,7 +5,28 @@ All notable changes to DRUID will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [0.1.0] — 2026-05-19
+## [0.1.2] — 2026-05-19
+
+### Fixed
+
+- Corrected author email in package metadata for PyPI.
+
+---
+
+## [0.1.1] — 2026-05-19
+
+### Fixed
+
+- Corrected repository URLs and author metadata across all project files.
+- GitHub Pages documentation site now live at https://lekewhite01.github.io/druid/.
+
+### Added
+
+- Documentation site: landing page, getting started guide, API reference, and examples.
+
+---
+
+## [0.1.0] — 2026-05-19 [yanked]
 
 ### Added
 

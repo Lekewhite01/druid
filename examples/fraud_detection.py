@@ -2,8 +2,7 @@
 DRUID Example: Fraud Detection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-End-to-end fraud detection workflow using DRUID,
-End-to-end fraud detection workflow.
+End-to-end fraud detection workflow using DRUID.
 """
 
 import druid
@@ -15,7 +14,7 @@ druid.configure(provider="anthropic")
 
 # Load from BigQuery
 ds = druid.load(
-    "pastel-data-science-general.training_data.central_fraud_training_preprocessed",
+    "myproject.training_data.central_fraud_training_preprocessed",
     target="fraud_label",
     name="fraud_training",
 )
