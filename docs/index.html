@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DRUID — AI-Powered Data Science Assistant</title>
+  <meta name="description" content="From raw data to trained models. DRUID combines automated analysis with LLMs to guide your entire ML workflow.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧙</text></svg>">
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav>
+  <div class="container">
+    <a href="index.html" class="nav-brand">DRUID <span>v0.1</span></a>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Toggle navigation">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <ul class="nav-links">
+      <li><a href="getting-started.html">Getting Started</a></li>
+      <li><a href="api.html">API Reference</a></li>
+      <li><a href="examples.html">Examples</a></li>
+      <li><a href="https://github.com/Lekewhite01/druid" class="nav-cta">GitHub &rarr;</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="container">
+    <h1>From raw data to<br><span class="gradient-text">trained models.</span></h1>
+    <p class="tagline">DRUID is a Python library that pairs automated data analysis with large language models to guide your entire ML workflow &mdash; in five function calls.</p>
+    <div class="hero-buttons">
+      <a href="getting-started.html" class="btn-primary">Get Started</a>
+      <a href="https://github.com/Lekewhite01/druid" class="btn-secondary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 00-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.3 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 016 0C17 4.7 18 5 18 5c.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0012 .3"/></svg>
+        View on GitHub
+      </a>
+    </div>
+    <div class="install-bar">
+      <span>$ <code>pip install druid-ai</code></span>
+      <button onclick="navigator.clipboard.writeText('pip install druid-ai').then(()=>this.textContent='Copied!')">Copy</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CODE SHOWCASE ============ -->
+<section class="code-showcase">
+  <div class="container">
+    <div class="code-cols">
+      <div class="description">
+        <h2>Five calls. Full workflow.</h2>
+        <p>Load your data, and DRUID inspects it, surfaces quality issues, recommends preprocessing, generates visualisations, runs model experiments, and explains the results.</p>
+        <ol class="step-list">
+          <li>Configure your AI provider</li>
+          <li>Load data from any source</li>
+          <li>AI inspects the schema</li>
+          <li>One-line preprocessing</li>
+          <li>Train &amp; compare models</li>
+          <li>AI recommends next steps</li>
+        </ol>
+      </div>
+      <pre><span class="label">Python</span>
+<span class="kw">import</span> <span class="var">druid</span>
+
+<span class="cm"># Configure your AI provider</span>
+<span class="var">druid</span>.<span class="fn">configure</span>(<span class="var">provider</span>=<span class="str">"anthropic"</span>)
+
+<span class="cm"># Load data (auto-detects format)</span>
+<span class="var">ds</span> = <span class="var">druid</span>.<span class="fn">load</span>(<span class="str">"transactions.csv"</span>, <span class="var">target</span>=<span class="str">"is_fraud"</span>)
+
+<span class="cm"># AI inspects the schema</span>
+<span class="var">druid</span>.<span class="fn">inspect</span>(<span class="var">ds</span>)
+
+<span class="cm"># Exploratory analysis with AI commentary</span>
+<span class="var">druid</span>.<span class="fn">explore</span>(<span class="var">ds</span>)
+
+<span class="cm"># Preprocess in one line</span>
+<span class="var">ds</span> = <span class="var">druid</span>.<span class="fn">prepare</span>(<span class="var">ds</span>)
+
+<span class="cm"># Train and compare models</span>
+<span class="var">results</span> = <span class="var">druid</span>.<span class="fn">experiment</span>(<span class="var">ds</span>)
+
+<span class="cm"># AI recommends next steps</span>
+<span class="var">druid</span>.<span class="fn">recommend</span>(<span class="var">ds</span>, <span class="var">results</span>)</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section class="features">
+  <div class="container">
+    <div class="section-header">
+      <h2>Built for the <span class="gradient-text">modern data scientist</span></h2>
+      <p>Automate the mechanical parts. Let AI surface the insights that matter.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">&#128230;</div>
+        <h3>Load Anything</h3>
+        <p>CSV, Parquet, Excel, JSON, BigQuery, PostgreSQL. Auto-detected from the source string.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#129504;</div>
+        <h3>AI Schema Inspection</h3>
+        <p>Spots data quality issues, type mismatches, and potential label leakage before you start.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#128202;</div>
+        <h3>Guided EDA</h3>
+        <p>Generates the right visualisations for your data and explains what they mean in plain English.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#9881;&#65039;</div>
+        <h3>One-Line Preprocessing</h3>
+        <p>Handles missing values, outliers, encoding, and feature engineering with sensible defaults.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#127942;</div>
+        <h3>Model Experimentation</h3>
+        <p>Trains and compares 7+ algorithms in one call. Returns a ranked leaderboard with key metrics.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#128257;</div>
+        <h3>Fully Reproducible</h3>
+        <p>Every step is logged. Export the entire session as a standalone Python script at any time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AI PROVIDERS ============ -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <h2>Bring your own AI</h2>
+      <p>DRUID works with the three major LLM providers. Or skip AI entirely &mdash; the automated tools work on their own.</p>
+    </div>
+    <div class="providers-grid">
+      <div class="provider-card">
+        <div class="provider-logo">&#9889;</div>
+        <h3>OpenAI</h3>
+        <p>GPT-4o, GPT-4, GPT-3.5 Turbo</p>
+        <code class="mt-2">pip install druid-ai[openai]</code>
+      </div>
+      <div class="provider-card">
+        <div class="provider-logo">&#129302;</div>
+        <h3>Anthropic</h3>
+        <p>Claude Sonnet, Claude Opus, Claude Haiku</p>
+        <code class="mt-2">pip install druid-ai[anthropic]</code>
+      </div>
+      <div class="provider-card">
+        <div class="provider-logo">&#128161;</div>
+        <h3>Google</h3>
+        <p>Gemini 2.0 Flash, Gemini Pro</p>
+        <code class="mt-2">pip install druid-ai[google]</code>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DATA SOURCES ============ -->
+<section class="features">
+  <div class="container">
+    <div class="code-cols">
+      <div>
+        <h2>Every source. One function.</h2>
+        <p>No boilerplate loaders. Just pass a path, table reference, or SQL query to <code class="inline-code">druid.load()</code> and it handles the rest.</p>
+        <div class="info-box tip mt-4">
+          <strong>Tip</strong>
+          <p>BigQuery and PostgreSQL require optional extras. Install with <code class="inline-code">pip install druid-ai[bigquery]</code> or <code class="inline-code">druid-ai[postgres]</code>.</p>
+        </div>
+      </div>
+      <pre><span class="label">Python</span>
+<span class="cm"># Local files — auto-detected</span>
+<span class="var">ds</span> = <span class="var">druid</span>.<span class="fn">load</span>(<span class="str">"data.csv"</span>)
+<span class="var">ds</span> = <span class="var">druid</span>.<span class="fn">load</span>(<span class="str">"data.parquet"</span>)
+<span class="var">ds</span> = <span class="var">druid</span>.<span class="fn">load</span>(<span class="str">"data.xlsx"</span>)
+<span class="var">ds</span> = <span class="var">druid</span>.<span class="fn">load</span>(<span class="str">"data.json"</span>)
+
+<span class="cm"># BigQuery</span>
+<span class="var">ds</span> = <span class="var">druid</span>.<span class="fn">load</span>(<span class="str">"project.dataset.table"</span>)
+
+<span class="cm"># SQL query</span>
+<span class="kw">from</span> <span class="var">druid.loaders</span> <span class="kw">import</span> <span class="var">SQLLoader</span>
+<span class="var">ds</span> = <span class="var">druid</span>.<span class="fn">load</span>(
+    <span class="str">"SELECT * FROM users"</span>,
+    <span class="var">loaders</span>=[<span class="fn">SQLLoader</span>(<span class="var">conn_str</span>)]
+)</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ARCHITECTURE ============ -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <h2>Clean, modular architecture</h2>
+      <p>Three layers: data, reasoning, tasks. Each works independently.</p>
+    </div>
+    <div class="arch-tree">
+      <span class="dir">druid/</span><br>
+      ├── <span class="dir">core/</span> <span class="desc">&nbsp;&nbsp;# DruidDataset, config, session tracking</span><br>
+      ├── <span class="dir">loaders/</span> <span class="desc">&nbsp;&nbsp;# File, database, auto-detect loaders</span><br>
+      ├── <span class="dir">ai/</span> <span class="desc">&nbsp;&nbsp;# LLM providers, prompts, schema inspector</span><br>
+      ├── <span class="dir">eda/</span> <span class="desc">&nbsp;&nbsp;# Profiling, visualisation, AI insights</span><br>
+      ├── <span class="dir">preprocessing/</span> <span class="desc">&nbsp;&nbsp;# Cleaning, transforms, encoding</span><br>
+      ├── <span class="dir">modelling/</span> <span class="desc">&nbsp;&nbsp;# Experiments, evaluation, recommendations</span><br>
+      └── <span class="dir">utils/</span> <span class="desc">&nbsp;&nbsp;# Display, sampling, export helpers</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta-section">
+  <div class="container">
+    <h2>Ready to get started?</h2>
+    <p>Install DRUID and go from raw data to trained models in minutes.</p>
+    <div class="hero-buttons">
+      <a href="getting-started.html" class="btn-primary">Read the Guide</a>
+      <a href="https://pypi.org/project/druid-ai/" class="btn-secondary">View on PyPI</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="container footer-inner">
+    <p>&copy; 2025 Leke White. MIT License.</p>
+    <ul class="footer-links">
+      <li><a href="https://github.com/Lekewhite01/druid">GitHub</a></li>
+      <li><a href="https://pypi.org/project/druid-ai/">PyPI</a></li>
+      <li><a href="getting-started.html">Docs</a></li>
+    </ul>
+  </div>
+</footer>
+
+</body>
+</html>

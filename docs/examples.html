@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Examples — DRUID</title>
+  <meta name="description" content="Real-world examples using the DRUID Python library.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧙</text></svg>">
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="container">
+    <a href="index.html" class="nav-brand">DRUID <span>v0.1</span></a>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Toggle navigation">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <ul class="nav-links">
+      <li><a href="getting-started.html">Getting Started</a></li>
+      <li><a href="api.html">API Reference</a></li>
+      <li><a href="examples.html" class="active">Examples</a></li>
+      <li><a href="https://github.com/Lekewhite01/druid" class="nav-cta">GitHub &rarr;</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- DOCS LAYOUT -->
+<div class="container">
+  <div class="docs-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <ul>
+        <li class="section-title">Examples</li>
+        <li><a href="#quickstart" class="active">Quickstart</a></li>
+        <li><a href="#fraud-detection">Fraud Detection</a></li>
+        <li><a href="#no-ai">Without AI</a></li>
+        <li><a href="#custom-pipeline">Custom Pipeline</a></li>
+      </ul>
+    </aside>
+
+    <!-- Content -->
+    <main class="docs-content">
+      <h1>Examples</h1>
+      <p class="subtitle">End-to-end workflows showing how DRUID handles real data problems.</p>
+
+      <!-- ===== QUICKSTART ===== -->
+      <h2 id="quickstart">Quickstart</h2>
+      <p>The minimal DRUID workflow &mdash; six function calls from raw data to model recommendations.</p>
+
+      <pre><span class="label">quickstart.py</span>
+<span class="kw">import</span> <span class="var">druid</span>
+
+<span class="cm"># 1. Configure your AI provider (pick one)</span>
+<span class="var">druid</span>.<span class="fn">configure</span>(<span class="var">provider</span>=<span class="str">"openai"</span>)
+<span class="cm"># druid.configure(provider="anthropic")</span>
+<span class="cm"># druid.configure(provider="google")</span>
+
+<span class="cm"># 2. Load your data (auto-detects format)</span>
+<span class="var">ds</span> = <span class="var">druid</span>.<span class="fn">load</span>(<span class="str">"your_data.csv"</span>, <span class="var">target</span>=<span class="str">"label_column"</span>)
+
+<span class="cm"># 3. AI inspects the schema</span>
+<span class="var">druid</span>.<span class="fn">inspect</span>(<span class="var">ds</span>)
+
+<span class="cm"># 4. Guided EDA — plots + AI commentary</span>
+<span class="var">druid</span>.<span class="fn">explore</span>(<span class="var">ds</span>, <span class="var">save_dir</span>=<span class="str">"./eda_output"</span>)
+
+<span class="cm"># 5. One-line preprocessing</span>
+<span class="var">ds</span> = <span class="var">druid</span>.<span class="fn">prepare</span>(<span class="var">ds</span>)
+
+<span class="cm"># 6. Train and compare models</span>
+<span class="var">results</span> = <span class="var">druid</span>.<span class="fn">experiment</span>(<span class="var">ds</span>)
+
+<span class="cm"># 7. AI recommends next steps</span>
+<span class="var">druid</span>.<span class="fn">recommend</span>(<span class="var">ds</span>, <span class="var">results</span>)
+
+<span class="cm"># 8. Export as a reproducible script</span>
+<span class="kw">from</span> <span class="var">druid.utils</span> <span class="kw">import</span> <span class="var">export_script</span>
+<span class="fn">export_script</span>(<span class="var">ds</span>, <span class="str">"reproducible_pipeline.py"</span>)</pre>
+
+      <div class="info-box tip">
+        <strong>What happens under the hood</strong>
+        <p><code>inspect()</code> builds a statistical profile and sends it to the LLM. The AI flags quality issues, type mismatches, and potential label leakage. <code>explore()</code> generates missing-value plots, distributions, correlations, and target analysis. <code>prepare()</code> chains cleaning, imputation, outlier treatment, and encoding with sensible defaults. <code>experiment()</code> trains 7+ algorithms and returns a ranked leaderboard.</p>
+      </div>
+
+      <!-- ===== FRAUD DETECTION ===== -->
+      <h2 id="fraud-detection">Fraud Detection</h2>
+      <p>A production-grade fraud detection workflow with custom preprocessing and detailed model evaluation.</p>
+
+      <pre><span class="label">fraud_detection.py</span>
+<span class="kw">import</span> <span class="var">druid</span>
+<span class="kw">from</span> <span class="var">druid.preprocessing</span> <span class="kw">import</span> (
+    <span class="var">auto_clean</span>, <span class="var">featurize_datetime</span>,
+    <span class="var">treat_outliers</span>, <span class="var">encode_categoricals</span>,
+    <span class="var">bin_numeric</span>, <span class="var">split_data</span>,
+)
+<span class="kw">from</span> <span class="var">druid.modelling</span> <span class="kw">import</span> <span class="var">classification_summary</span>, <span class="var">feature_importance</span>
+
+<span class="cm"># Configure AI (Claude in this case)</span>
+<span class="var">druid</span>.<span class="fn">configure</span>(<span class="var">provider</span>=<span class="str">"anthropic"</span>)
+
+<span class="cm"># Load from BigQuery</span>
+<span class="var">ds</span> = <span class="var">druid</span>.<span class="fn">load</span>(
+    <span class="str">"myproject.training_data.fraud_features"</span>,
+    <span class="var">target</span>=<span class="str">"fraud_label"</span>,
+    <span class="var">name</span>=<span class="str">"fraud_training"</span>,
+)
+
+<span class="cm"># AI schema inspection</span>
+<span class="var">inspection</span> = <span class="var">druid</span>.<span class="fn">inspect</span>(<span class="var">ds</span>)
+
+<span class="cm"># Explore — ask a specific question</span>
+<span class="var">eda</span> = <span class="var">druid</span>.<span class="fn">explore</span>(
+    <span class="var">ds</span>,
+    <span class="var">question</span>=<span class="str">"What patterns distinguish fraudulent transactions?"</span>,
+)</pre>
+
+      <p>Instead of the one-line <code class="inline-code">druid.prepare()</code>, this example shows granular preprocessing for more control:</p>
+
+      <pre><span class="label">Custom preprocessing</span>
+<span class="cm"># Step-by-step preprocessing</span>
+<span class="var">ds</span> = <span class="fn">auto_clean</span>(<span class="var">ds</span>)
+
+<span class="cm"># Extract temporal features from date columns</span>
+<span class="var">ds</span> = <span class="fn">featurize_datetime</span>(<span class="var">ds</span>, <span class="var">columns</span>=[<span class="str">"txn_date"</span>, <span class="str">"date_joined"</span>])
+
+<span class="cm"># Custom age bins (domain-specific)</span>
+<span class="var">ds</span> = <span class="fn">bin_numeric</span>(
+    <span class="var">ds</span>,
+    <span class="var">column</span>=<span class="str">"age"</span>,
+    <span class="var">bins</span>=[<span class="num">0</span>, <span class="num">2</span>, <span class="num">12</span>, <span class="num">25</span>, <span class="num">45</span>, <span class="num">65</span>, <span class="num">120</span>],
+    <span class="var">labels</span>=[<span class="str">"baby"</span>, <span class="str">"child"</span>, <span class="str">"young_adult"</span>, <span class="str">"mid_age"</span>, <span class="str">"senior"</span>, <span class="str">"elderly"</span>],
+)
+
+<span class="cm"># Outlier treatment and encoding</span>
+<span class="var">ds</span> = <span class="fn">treat_outliers</span>(<span class="var">ds</span>)
+<span class="var">ds</span> = <span class="fn">encode_categoricals</span>(<span class="var">ds</span>)</pre>
+
+      <p>Train models and evaluate the best one in detail:</p>
+
+      <pre><span class="label">Model evaluation</span>
+<span class="cm"># Train and compare</span>
+<span class="var">results</span> = <span class="var">druid</span>.<span class="fn">experiment</span>(<span class="var">ds</span>, <span class="var">task_type</span>=<span class="str">"classification"</span>)
+
+<span class="cm"># Detailed evaluation of the top model</span>
+<span class="var">X_train</span>, <span class="var">X_test</span>, <span class="var">y_train</span>, <span class="var">y_test</span> = <span class="fn">split_data</span>(<span class="var">ds</span>)
+<span class="var">best</span> = <span class="var">results</span>[<span class="str">"best_model"</span>]
+<span class="var">summary</span> = <span class="fn">classification_summary</span>(<span class="var">best</span>, <span class="var">X_test</span>.<span class="fn">values</span>, <span class="var">y_test</span>.<span class="fn">values</span>)
+<span class="fn">print</span>(<span class="var">summary</span>[<span class="str">"report"</span>])
+
+<span class="cm"># Feature importance</span>
+<span class="var">fi_fig</span> = <span class="fn">feature_importance</span>(<span class="var">best</span>, <span class="fn">list</span>(<span class="var">X_train</span>.<span class="var">columns</span>))
+
+<span class="cm"># AI recommends what to tune</span>
+<span class="var">druid</span>.<span class="fn">recommend</span>(<span class="var">ds</span>, <span class="var">results</span>)</pre>
+
+      <!-- ===== WITHOUT AI ===== -->
+      <h2 id="no-ai">Using DRUID Without AI</h2>
+      <p>DRUID works fully without an API key. Skip <code class="inline-code">druid.configure()</code> and all the automated tools still run &mdash; profiling, visualisations, preprocessing, and model experiments.</p>
+
+      <pre><span class="label">no_ai.py</span>
+<span class="kw">import</span> <span class="var">druid</span>
+
+<span class="cm"># No configure() call — everything still works</span>
+<span class="var">ds</span> = <span class="var">druid</span>.<span class="fn">load</span>(<span class="str">"customers.parquet"</span>, <span class="var">target</span>=<span class="str">"churn"</span>)
+
+<span class="cm"># Prints statistical profile (no AI commentary)</span>
+<span class="var">druid</span>.<span class="fn">inspect</span>(<span class="var">ds</span>)
+
+<span class="cm"># Generates all plots (no AI guidance text)</span>
+<span class="var">druid</span>.<span class="fn">explore</span>(<span class="var">ds</span>, <span class="var">save_dir</span>=<span class="str">"./plots"</span>)
+
+<span class="cm"># Preprocessing — works exactly the same</span>
+<span class="var">ds</span> = <span class="var">druid</span>.<span class="fn">prepare</span>(<span class="var">ds</span>)
+
+<span class="cm"># Model experiments — full leaderboard</span>
+<span class="var">results</span> = <span class="var">druid</span>.<span class="fn">experiment</span>(<span class="var">ds</span>)
+
+<span class="cm"># recommend() will remind you to add an API key</span>
+<span class="var">druid</span>.<span class="fn">recommend</span>(<span class="var">ds</span>, <span class="var">results</span>)</pre>
+
+      <!-- ===== CUSTOM PIPELINE ===== -->
+      <h2 id="custom-pipeline">Custom Pipeline with Session Export</h2>
+      <p>Build a preprocessing pipeline step-by-step, then export the entire session as a standalone script.</p>
+
+      <pre><span class="label">custom_pipeline.py</span>
+<span class="kw">import</span> <span class="var">druid</span>
+<span class="kw">from</span> <span class="var">druid.preprocessing</span> <span class="kw">import</span> (
+    <span class="var">auto_clean</span>, <span class="var">featurize_datetime</span>,
+    <span class="var">treat_outliers</span>, <span class="var">encode_categoricals</span>,
+)
+<span class="kw">from</span> <span class="var">druid.utils</span> <span class="kw">import</span> <span class="var">export_script</span>, <span class="var">save_dataset</span>
+
+<span class="var">druid</span>.<span class="fn">configure</span>(<span class="var">provider</span>=<span class="str">"google"</span>)
+
+<span class="var">ds</span> = <span class="var">druid</span>.<span class="fn">load</span>(<span class="str">"sales.xlsx"</span>, <span class="var">target</span>=<span class="str">"revenue_bucket"</span>)
+
+<span class="cm"># Each step is recorded in the session</span>
+<span class="var">ds</span> = <span class="fn">auto_clean</span>(<span class="var">ds</span>)
+<span class="var">ds</span> = <span class="fn">featurize_datetime</span>(<span class="var">ds</span>, <span class="var">columns</span>=[<span class="str">"order_date"</span>])
+<span class="var">ds</span> = <span class="fn">treat_outliers</span>(<span class="var">ds</span>, <span class="var">method</span>=<span class="str">"gaussian"</span>, <span class="var">fold</span>=<span class="num">3.0</span>)
+<span class="var">ds</span> = <span class="fn">encode_categoricals</span>(<span class="var">ds</span>)
+
+<span class="cm"># Run experiments</span>
+<span class="var">results</span> = <span class="var">druid</span>.<span class="fn">experiment</span>(<span class="var">ds</span>)
+
+<span class="cm"># Save a checkpoint</span>
+<span class="fn">save_dataset</span>(<span class="var">ds</span>, <span class="str">"checkpoint.pkl"</span>)
+
+<span class="cm"># Export the full session as a Python script</span>
+<span class="fn">export_script</span>(<span class="var">ds</span>, <span class="str">"sales_pipeline.py"</span>)
+<span class="cm"># → Produces a standalone .py file with every step</span></pre>
+
+      <div class="info-box">
+        <strong>All examples on GitHub</strong>
+        <p>Find the full source for these examples and more in the <a href="https://github.com/Lekewhite01/druid/tree/master/examples">examples/</a> directory.</p>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container footer-inner">
+    <p>&copy; 2025 Leke White. MIT License.</p>
+    <ul class="footer-links">
+      <li><a href="https://github.com/Lekewhite01/druid">GitHub</a></li>
+      <li><a href="https://pypi.org/project/druid-ai/">PyPI</a></li>
+      <li><a href="index.html">Home</a></li>
+    </ul>
+  </div>
+</footer>
+
+</body>
+</html>

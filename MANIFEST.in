@@ -1,0 +1,9 @@
+include LICENSE
+include README.md
+include CHANGELOG.md
+include pyproject.toml
+recursive-include druid *.py *.yaml *.yml
+recursive-include examples *.py
+recursive-include tests *.py
+prune docs
+prune .github

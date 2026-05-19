@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Getting Started — DRUID</title>
+  <meta name="description" content="Install DRUID and build your first ML pipeline in five minutes.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧙</text></svg>">
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="container">
+    <a href="index.html" class="nav-brand">DRUID <span>v0.1</span></a>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Toggle navigation">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <ul class="nav-links">
+      <li><a href="getting-started.html" class="active">Getting Started</a></li>
+      <li><a href="api.html">API Reference</a></li>
+      <li><a href="examples.html">Examples</a></li>
+      <li><a href="https://github.com/Lekewhite01/druid" class="nav-cta">GitHub &rarr;</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- DOCS LAYOUT -->
+<div class="container">
+  <div class="docs-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <ul>
+        <li class="section-title">Setup</li>
+        <li><a href="#installation" class="active">Installation</a></li>
+        <li><a href="#ai-config">AI Configuration</a></li>
+        <li class="section-title">Workflow</li>
+        <li><a href="#loading">Loading Data</a></li>
+        <li><a href="#inspecting">Schema Inspection</a></li>
+        <li><a href="#exploring">Exploratory Analysis</a></li>
+        <li><a href="#preprocessing">Preprocessing</a></li>
+        <li><a href="#modelling">Model Experiments</a></li>
+        <li><a href="#recommendations">AI Recommendations</a></li>
+        <li class="section-title">Advanced</li>
+        <li><a href="#sessions">Session Tracking</a></li>
+        <li><a href="#config-yaml">YAML Configuration</a></li>
+        <li><a href="#without-ai">Using Without AI</a></li>
+      </ul>
+    </aside>
+
+    <!-- Content -->
+    <main class="docs-content">
+      <h1>Getting Started</h1>
+      <p class="subtitle">Install DRUID and go from raw data to trained models in under five minutes.</p>
+
+      <!-- Installation -->
+      <h2 id="installation">Installation</h2>
+      <p>DRUID requires Python 3.9 or later. Install the core package from PyPI:</p>
+      <pre>pip install druid-ai</pre>
+      <p>The core package includes pandas, numpy, scikit-learn, matplotlib, seaborn, feature-engine, missingno, and rich. To add AI provider support, install the relevant extras:</p>
+      <pre><span class="cm"># Pick your provider</span>
+pip install druid-ai[openai]       <span class="cm"># OpenAI (GPT-4o, GPT-4, etc.)</span>
+pip install druid-ai[anthropic]    <span class="cm"># Anthropic (Claude)</span>
+pip install druid-ai[google]       <span class="cm"># Google (Gemini)</span>
+
+<span class="cm"># Or install everything</span>
+pip install druid-ai[all]</pre>
+
+      <p>For database connectors:</p>
+      <pre>pip install druid-ai[bigquery]     <span class="cm"># Google BigQuery</span>
+pip install druid-ai[postgres]     <span class="cm"># PostgreSQL (via SQLAlchemy)</span></pre>
+
+      <div class="info-box tip">
+        <strong>Tip</strong>
+        <p>For development, clone the repo and install in editable mode: <code class="inline-code">pip install -e ".[dev]"</code></p>
+      </div>
+
+      <!-- AI Configuration -->
+      <h2 id="ai-config">AI Configuration</h2>
+      <p>DRUID uses environment variables by default. Set the key for your chosen provider:</p>
+      <pre><span class="cm"># In your shell profile (.bashrc, .zshrc, etc.)</span>
+<span class="kw">export</span> OPENAI_API_KEY=<span class="str">"sk-..."</span>
+<span class="kw">export</span> ANTHROPIC_API_KEY=<span class="str">"sk-ant-..."</span>
+<span class="kw">export</span> GOOGLE_API_KEY=<span class="str">"..."</span></pre>
+
+      <p>Then tell DRUID which provider to use:</p>
+      <pre><span class="kw">import</span> <span class="var">druid</span>
+
+<span class="cm"># Uses the matching env var automatically</span>
+<span class="var">druid</span>.<span class="fn">configure</span>(<span class="var">provider</span>=<span class="str">"anthropic"</span>)
+
+<span class="cm"># Or pass the key directly</span>
+<span class="var">druid</span>.<span class="fn">configure</span>(<span class="var">provider</span>=<span class="str">"openai"</span>, <span class="var">api_key</span>=<span class="str">"sk-..."</span>)</pre>
+
+      <div class="info-box">
+        <strong>Note</strong>
+        <p>AI is optional. DRUID's profiling, visualisations, preprocessing, and model experiments all work without an API key. The AI layer adds natural-language schema analysis, insights, and recommendations.</p>
+      </div>
+
+      <!-- Loading Data -->
+      <h2 id="loading">Loading Data</h2>
+      <p>Pass any file path, table reference, or SQL query to <code class="inline-code">druid.load()</code>. The format is auto-detected:</p>
+      <pre><span class="cm"># Local files</span>
+<span class="var">ds</span> = <span class="var">druid</span>.<span class="fn">load</span>(<span class="str">"transactions.csv"</span>, <span class="var">target</span>=<span class="str">"is_fraud"</span>)
+<span class="var">ds</span> = <span class="var">druid</span>.<span class="fn">load</span>(<span class="str">"users.parquet"</span>)
+<span class="var">ds</span> = <span class="var">druid</span>.<span class="fn">load</span>(<span class="str">"report.xlsx"</span>, <span class="var">sheet_name</span>=<span class="str">"Q4"</span>)
+
+<span class="cm"># BigQuery</span>
+<span class="var">ds</span> = <span class="var">druid</span>.<span class="fn">load</span>(<span class="str">"myproject.analytics.events"</span>)
+
+<span class="cm"># SQL with a custom connection</span>
+<span class="kw">from</span> <span class="var">druid.loaders</span> <span class="kw">import</span> <span class="var">SQLLoader</span>
+<span class="var">ds</span> = <span class="var">druid</span>.<span class="fn">load</span>(
+    <span class="str">"SELECT * FROM orders WHERE year = 2024"</span>,
+    <span class="var">loaders</span>=[<span class="fn">SQLLoader</span>(<span class="str">"postgresql://user:pass@host/db"</span>)]
+)</pre>
+
+      <p>The result is a <code class="inline-code">DruidDataset</code> that wraps your DataFrame with metadata, profiling, and session tracking. Access the raw DataFrame anytime with <code class="inline-code">ds.df</code>.</p>
+
+      <!-- Schema Inspection -->
+      <h2 id="inspecting">Schema Inspection</h2>
+      <p>Ask DRUID to analyse the dataset structure. Without AI, this prints a statistical profile. With AI, it sends that profile to the LLM for deeper analysis:</p>
+      <pre><span class="var">result</span> = <span class="var">druid</span>.<span class="fn">inspect</span>(<span class="var">ds</span>)</pre>
+      <p>The AI flags issues like mislabelled columns, suspicious distributions, and potential data leakage &mdash; before you write a single line of analysis code.</p>
+
+      <!-- Exploratory Analysis -->
+      <h2 id="exploring">Exploratory Analysis</h2>
+      <p>Generate visualisations and (optionally) AI-powered commentary on what the data is telling you:</p>
+      <pre><span class="cm"># General exploration</span>
+<span class="var">eda</span> = <span class="var">druid</span>.<span class="fn">explore</span>(<span class="var">ds</span>)
+
+<span class="cm"># Focused question</span>
+<span class="var">eda</span> = <span class="var">druid</span>.<span class="fn">explore</span>(<span class="var">ds</span>, <span class="var">question</span>=<span class="str">"What patterns separate fraud from non-fraud?"</span>)
+
+<span class="cm"># Save plots to disk</span>
+<span class="var">eda</span> = <span class="var">druid</span>.<span class="fn">explore</span>(<span class="var">ds</span>, <span class="var">save_dir</span>=<span class="str">"./eda_output"</span>)</pre>
+
+      <p>This produces missing-value matrices, distribution histograms, correlation heatmaps, and target-variable analysis.</p>
+
+      <!-- Preprocessing -->
+      <h2 id="preprocessing">Preprocessing</h2>
+      <p>One line handles cleaning, imputation, encoding, and outlier treatment:</p>
+      <pre><span class="var">ds</span> = <span class="var">druid</span>.<span class="fn">prepare</span>(<span class="var">ds</span>)</pre>
+
+      <p>Need more control? Import individual functions:</p>
+      <pre><span class="kw">from</span> <span class="var">druid.preprocessing</span> <span class="kw">import</span> (
+    <span class="var">auto_clean</span>,
+    <span class="var">featurize_datetime</span>,
+    <span class="var">treat_outliers</span>,
+    <span class="var">encode_categoricals</span>,
+    <span class="var">bin_numeric</span>,
+)
+
+<span class="var">ds</span> = <span class="fn">auto_clean</span>(<span class="var">ds</span>)
+<span class="var">ds</span> = <span class="fn">featurize_datetime</span>(<span class="var">ds</span>, <span class="var">columns</span>=[<span class="str">"created_at"</span>])
+<span class="var">ds</span> = <span class="fn">treat_outliers</span>(<span class="var">ds</span>, <span class="var">method</span>=<span class="str">"iqr"</span>, <span class="var">fold</span>=<span class="num">1.5</span>)
+<span class="var">ds</span> = <span class="fn">encode_categoricals</span>(<span class="var">ds</span>, <span class="var">high_card_threshold</span>=<span class="num">15</span>)</pre>
+
+      <!-- Model Experiments -->
+      <h2 id="modelling">Model Experiments</h2>
+      <p>Train multiple algorithms and get a ranked leaderboard:</p>
+      <pre><span class="var">results</span> = <span class="var">druid</span>.<span class="fn">experiment</span>(<span class="var">ds</span>)</pre>
+
+      <p>This trains Logistic Regression, Random Forest, Gradient Boosting, AdaBoost, Decision Tree, KNN, and SGD out of the box. If <code class="inline-code">xgboost</code> or <code class="inline-code">lightgbm</code> are installed, those are automatically included.</p>
+      <p>The leaderboard shows accuracy, F1, precision, recall, ROC AUC, and training time for each model. DRUID auto-detects whether the task is classification or regression from the target column.</p>
+
+      <!-- AI Recommendations -->
+      <h2 id="recommendations">AI Recommendations</h2>
+      <p>Send the experiment results to the AI for actionable next steps:</p>
+      <pre><span class="var">druid</span>.<span class="fn">recommend</span>(<span class="var">ds</span>, <span class="var">results</span>)</pre>
+      <p>The AI recommends which model to invest in, specific hyperparameters to tune, and strategies for handling class imbalance or other dataset-specific issues.</p>
+
+      <!-- Session Tracking -->
+      <h2 id="sessions">Session Tracking</h2>
+      <p>Every DRUID operation is logged as a session event with timestamps, parameters, and AI rationale. Export the full session as a standalone Python script:</p>
+      <pre><span class="kw">from</span> <span class="var">druid.utils</span> <span class="kw">import</span> <span class="var">export_script</span>
+
+<span class="fn">export_script</span>(<span class="var">ds</span>, <span class="str">"my_pipeline.py"</span>)</pre>
+      <p>This produces a reproducible script you can hand to colleagues or run in production &mdash; no DRUID dependency required.</p>
+
+      <!-- YAML Configuration -->
+      <h2 id="config-yaml">YAML Configuration</h2>
+      <p>For team environments, share settings via a YAML file:</p>
+      <pre><span class="cm"># druid_config.yaml</span>
+<span class="var">ai</span>:
+  <span class="var">provider</span>: <span class="str">anthropic</span>
+  <span class="var">model</span>: <span class="str">claude-sonnet-4-20250514</span>
+  <span class="var">temperature</span>: <span class="num">0.3</span>
+<span class="var">pipeline</span>:
+  <span class="var">null_threshold</span>: <span class="num">0.7</span>
+  <span class="var">high_cardinality_threshold</span>: <span class="num">15</span></pre>
+
+      <pre><span class="kw">from</span> <span class="var">druid</span> <span class="kw">import</span> <span class="var">DruidConfig</span>
+
+<span class="var">config</span> = <span class="var">DruidConfig</span>.<span class="fn">from_yaml</span>(<span class="str">"druid_config.yaml"</span>)</pre>
+
+      <!-- Using Without AI -->
+      <h2 id="without-ai">Using Without AI</h2>
+      <p>DRUID is fully functional without an API key. Skip <code class="inline-code">druid.configure()</code> and every tool works &mdash; profiling, visualisations, preprocessing, model experiments. The AI adds schema analysis, natural-language insights, and model recommendations on top.</p>
+
+      <div class="info-box tip">
+        <strong>Next steps</strong>
+        <p>See the <a href="api.html">API Reference</a> for full function signatures, or jump to <a href="examples.html">Examples</a> for real-world workflows.</p>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container footer-inner">
+    <p>&copy; 2025 Leke White. MIT License.</p>
+    <ul class="footer-links">
+      <li><a href="https://github.com/Lekewhite01/druid">GitHub</a></li>
+      <li><a href="https://pypi.org/project/druid-ai/">PyPI</a></li>
+      <li><a href="index.html">Home</a></li>
+    </ul>
+  </div>
+</footer>
+
+</body>
+</html>

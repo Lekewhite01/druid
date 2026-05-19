@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>API Reference — DRUID</title>
+  <meta name="description" content="Complete API reference for the DRUID Python library.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧙</text></svg>">
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="container">
+    <a href="index.html" class="nav-brand">DRUID <span>v0.1</span></a>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Toggle navigation">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <ul class="nav-links">
+      <li><a href="getting-started.html">Getting Started</a></li>
+      <li><a href="api.html" class="active">API Reference</a></li>
+      <li><a href="examples.html">Examples</a></li>
+      <li><a href="https://github.com/Lekewhite01/druid" class="nav-cta">GitHub &rarr;</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- DOCS LAYOUT -->
+<div class="container">
+  <div class="docs-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <ul>
+        <li class="section-title">Top-Level</li>
+        <li><a href="#configure" class="active">configure()</a></li>
+        <li><a href="#load">load()</a></li>
+        <li><a href="#inspect">inspect()</a></li>
+        <li><a href="#explore">explore()</a></li>
+        <li><a href="#prepare">prepare()</a></li>
+        <li><a href="#experiment">experiment()</a></li>
+        <li><a href="#recommend">recommend()</a></li>
+        <li class="section-title">Core</li>
+        <li><a href="#druiddataset">DruidDataset</a></li>
+        <li><a href="#druidconfig">DruidConfig</a></li>
+        <li><a href="#aiconfig">AIConfig</a></li>
+        <li class="section-title">Preprocessing</li>
+        <li><a href="#auto-clean">auto_clean()</a></li>
+        <li><a href="#featurize-datetime">featurize_datetime()</a></li>
+        <li><a href="#treat-outliers">treat_outliers()</a></li>
+        <li><a href="#encode-categoricals">encode_categoricals()</a></li>
+        <li><a href="#bin-numeric">bin_numeric()</a></li>
+        <li class="section-title">Modelling</li>
+        <li><a href="#run-experiment">run_experiment()</a></li>
+        <li><a href="#classification-summary">classification_summary()</a></li>
+        <li><a href="#feature-importance">feature_importance()</a></li>
+        <li class="section-title">Utilities</li>
+        <li><a href="#export-script">export_script()</a></li>
+        <li><a href="#save-dataset">save_dataset()</a></li>
+      </ul>
+    </aside>
+
+    <!-- Content -->
+    <main class="docs-content">
+      <h1>API Reference</h1>
+      <p class="subtitle">Complete reference for all public DRUID functions and classes.</p>
+
+      <!-- ============================== -->
+      <!-- TOP-LEVEL API                  -->
+      <!-- ============================== -->
+
+      <h2 id="configure">druid.configure()</h2>
+      <div class="func-sig">
+        <div class="name">druid.configure(provider, api_key=None, model=None, **kwargs)</div>
+        <div class="params">Configure DRUID's AI provider and global settings.</div>
+      </div>
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>provider</td><td><code>str</code></td><td><code>"openai"</code>, <code>"anthropic"</code>, or <code>"google"</code>.</td></tr>
+          <tr><td>api_key</td><td><code>str | None</code></td><td>API key. Falls back to environment variables if omitted.</td></tr>
+          <tr><td>model</td><td><code>str | None</code></td><td>Model name override (e.g. <code>"gpt-4o"</code>, <code>"claude-sonnet-4-20250514"</code>).</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Returns:</strong> <code class="inline-code">DruidConfig</code> &mdash; the updated global configuration.</p>
+
+      <!-- load -->
+      <h2 id="load">druid.load()</h2>
+      <div class="func-sig">
+        <div class="name">druid.load(source, target=None, name=None, **kwargs)</div>
+        <div class="params">Load data from any source into a DruidDataset.</div>
+      </div>
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>source</td><td><code>str</code></td><td>File path, BigQuery table reference, or SQL query string.</td></tr>
+          <tr><td>target</td><td><code>str | None</code></td><td>Name of the target / label column.</td></tr>
+          <tr><td>name</td><td><code>str | None</code></td><td>Human-friendly dataset name. Auto-generated if omitted.</td></tr>
+          <tr><td>**kwargs</td><td></td><td>Passed to the underlying loader (e.g. <code>sheet_name</code> for Excel).</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Returns:</strong> <code class="inline-code">DruidDataset</code></p>
+      <p>Auto-detects format from the source string: CSV, TSV, Parquet, Excel, JSON, JSONL, Feather, BigQuery table references, and SQL queries.</p>
+
+      <!-- inspect -->
+      <h2 id="inspect">druid.inspect()</h2>
+      <div class="func-sig">
+        <div class="name">druid.inspect(ds)</div>
+        <div class="params">AI-powered schema inspection.</div>
+      </div>
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>ds</td><td><code>DruidDataset</code></td><td>The dataset to inspect.</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Returns:</strong> <code class="inline-code">dict</code> with keys <code>profile</code> and <code>raw_response</code> (AI commentary, or <code>None</code> if AI is not configured).</p>
+
+      <!-- explore -->
+      <h2 id="explore">druid.explore()</h2>
+      <div class="func-sig">
+        <div class="name">druid.explore(ds, question=None, save_dir=None)</div>
+        <div class="params">Exploratory data analysis with optional AI guidance.</div>
+      </div>
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>ds</td><td><code>DruidDataset</code></td><td>The dataset to explore.</td></tr>
+          <tr><td>question</td><td><code>str | None</code></td><td>Specific question to focus the AI's commentary.</td></tr>
+          <tr><td>save_dir</td><td><code>str | None</code></td><td>Directory to save plot images.</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Returns:</strong> <code class="inline-code">dict</code> with keys <code>profile</code>, <code>plots</code>, and optionally <code>ai_guidance</code>.</p>
+
+      <!-- prepare -->
+      <h2 id="prepare">druid.prepare()</h2>
+      <div class="func-sig">
+        <div class="name">druid.prepare(ds, auto=True)</div>
+        <div class="params">Preprocess the dataset for modelling.</div>
+      </div>
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>ds</td><td><code>DruidDataset</code></td><td>The dataset to preprocess.</td></tr>
+          <tr><td>auto</td><td><code>bool</code></td><td>If <code>True</code>, uses sensible defaults for the full pipeline.</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Returns:</strong> <code class="inline-code">DruidDataset</code> &mdash; the preprocessed dataset.</p>
+
+      <!-- experiment -->
+      <h2 id="experiment">druid.experiment()</h2>
+      <div class="func-sig">
+        <div class="name">druid.experiment(ds, task_type=None)</div>
+        <div class="params">Train multiple models and compare performance.</div>
+      </div>
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>ds</td><td><code>DruidDataset</code></td><td>Must have <code>target</code> set.</td></tr>
+          <tr><td>task_type</td><td><code>str | None</code></td><td><code>"classification"</code> or <code>"regression"</code>. Auto-detected if omitted.</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Returns:</strong> <code class="inline-code">dict</code> with keys <code>leaderboard</code>, <code>best_model</code>, <code>task_type</code>, and per-model results.</p>
+
+      <!-- recommend -->
+      <h2 id="recommend">druid.recommend()</h2>
+      <div class="func-sig">
+        <div class="name">druid.recommend(ds, experiment_results=None)</div>
+        <div class="params">Get AI-powered recommendations for next steps.</div>
+      </div>
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>ds</td><td><code>DruidDataset</code></td><td>The dataset.</td></tr>
+          <tr><td>experiment_results</td><td><code>dict | None</code></td><td>Results from <code>druid.experiment()</code>.</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Returns:</strong> <code class="inline-code">str</code> &mdash; AI-generated recommendations.</p>
+
+      <!-- ============================== -->
+      <!-- CORE CLASSES                    -->
+      <!-- ============================== -->
+
+      <h2 id="druiddataset">DruidDataset</h2>
+      <div class="func-sig">
+        <div class="name">class druid.DruidDataset</div>
+        <div class="params">Central wrapper around a pandas DataFrame with metadata, profiling, and session tracking.</div>
+      </div>
+      <table class="param-table">
+        <thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>df</td><td><code>pd.DataFrame</code></td><td>The underlying DataFrame.</td></tr>
+          <tr><td>name</td><td><code>str</code></td><td>Human-friendly dataset name.</td></tr>
+          <tr><td>target</td><td><code>str | None</code></td><td>Name of the target column.</td></tr>
+          <tr><td>config</td><td><code>DruidConfig</code></td><td>Configuration for this dataset.</td></tr>
+          <tr><td>shape</td><td><code>tuple</code></td><td>Rows and columns (delegates to DataFrame).</td></tr>
+        </tbody>
+      </table>
+      <h3>Key Methods</h3>
+      <table class="param-table">
+        <thead><tr><th>Method</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>profile(force=False)</td><td>Compute a statistical profile. Cached unless <code>force=True</code>.</td></tr>
+          <tr><td>classify_columns()</td><td>Returns a dict classifying columns into <code>numeric</code>, <code>categorical</code>, <code>boolean</code>, <code>datetime</code>, <code>text</code>, <code>id_like</code>.</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="druidconfig">DruidConfig</h2>
+      <div class="func-sig">
+        <div class="name">class druid.DruidConfig</div>
+        <div class="params">Global configuration dataclass.</div>
+      </div>
+      <table class="param-table">
+        <thead><tr><th>Attribute</th><th>Type</th><th>Default</th></tr></thead>
+        <tbody>
+          <tr><td>ai</td><td><code>AIConfig</code></td><td>Default AIConfig (unconfigured)</td></tr>
+          <tr><td>display</td><td><code>DisplayConfig</code></td><td>Display settings</td></tr>
+          <tr><td>pipeline</td><td><code>PipelineConfig</code></td><td>Preprocessing defaults</td></tr>
+        </tbody>
+      </table>
+      <h3>Class Methods</h3>
+      <table class="param-table">
+        <thead><tr><th>Method</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>from_yaml(path)</td><td>Load configuration from a YAML file.</td></tr>
+          <tr><td>to_yaml(path)</td><td>Save configuration to a YAML file (API keys scrubbed).</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="aiconfig">AIConfig</h2>
+      <div class="func-sig">
+        <div class="name">class druid.AIConfig</div>
+        <div class="params">AI provider configuration.</div>
+      </div>
+      <table class="param-table">
+        <thead><tr><th>Attribute</th><th>Type</th><th>Default</th></tr></thead>
+        <tbody>
+          <tr><td>provider</td><td><code>str</code></td><td><code>"openai"</code></td></tr>
+          <tr><td>api_key</td><td><code>str | None</code></td><td>Auto-resolves from env</td></tr>
+          <tr><td>model</td><td><code>str | None</code></td><td>Provider-specific default</td></tr>
+          <tr><td>temperature</td><td><code>float</code></td><td><code>0.3</code></td></tr>
+          <tr><td>max_tokens</td><td><code>int</code></td><td><code>2000</code></td></tr>
+          <tr><td>is_configured</td><td><code>bool</code></td><td>Property: <code>True</code> if an API key is available.</td></tr>
+        </tbody>
+      </table>
+
+      <!-- ============================== -->
+      <!-- PREPROCESSING                   -->
+      <!-- ============================== -->
+
+      <h2 id="auto-clean">auto_clean()</h2>
+      <div class="func-sig">
+        <div class="name">druid.preprocessing.auto_clean(dataset, null_threshold=None, constant_tol=0.98)</div>
+        <div class="params">Full automatic cleaning pipeline: drops high-null columns, constant features, trims whitespace, imputes missing values, removes duplicates.</div>
+      </div>
+      <p><strong>Returns:</strong> <code class="inline-code">DruidDataset</code></p>
+
+      <h2 id="featurize-datetime">featurize_datetime()</h2>
+      <div class="func-sig">
+        <div class="name">druid.preprocessing.featurize_datetime(dataset, columns=None, features=None, drop_original=True)</div>
+        <div class="params">Extract temporal features (year, month, day, day of week, hour) from datetime columns using feature-engine.</div>
+      </div>
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>columns</td><td><code>list[str] | None</code></td><td>Columns to featurize. Auto-detected if omitted.</td></tr>
+          <tr><td>features</td><td><code>list[str] | None</code></td><td>Which features to extract. Defaults to year, month, day_of_week, hour.</td></tr>
+          <tr><td>drop_original</td><td><code>bool</code></td><td>Whether to drop the original datetime columns.</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Returns:</strong> <code class="inline-code">DruidDataset</code></p>
+
+      <h2 id="treat-outliers">treat_outliers()</h2>
+      <div class="func-sig">
+        <div class="name">druid.preprocessing.treat_outliers(dataset, method="iqr", fold=1.5, columns=None)</div>
+        <div class="params">Cap outliers using feature-engine's Winsorizer.</div>
+      </div>
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>method</td><td><code>str</code></td><td><code>"iqr"</code> or <code>"gaussian"</code>.</td></tr>
+          <tr><td>fold</td><td><code>float</code></td><td>IQR multiplier or standard deviation multiplier.</td></tr>
+          <tr><td>columns</td><td><code>list[str] | None</code></td><td>Columns to treat. Auto-detects numeric columns if omitted.</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Returns:</strong> <code class="inline-code">DruidDataset</code></p>
+
+      <h2 id="encode-categoricals">encode_categoricals()</h2>
+      <div class="func-sig">
+        <div class="name">druid.preprocessing.encode_categoricals(dataset, high_card_threshold=None, drop_first=True)</div>
+        <div class="params">Automatic categorical encoding. Low-cardinality &rarr; one-hot, high-cardinality &rarr; frequency encoding.</div>
+      </div>
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>high_card_threshold</td><td><code>int | None</code></td><td>Cardinality cutoff. Defaults to <code>PipelineConfig.high_cardinality_threshold</code> (15).</td></tr>
+          <tr><td>drop_first</td><td><code>bool</code></td><td>Drop first category in one-hot encoding to avoid collinearity.</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Returns:</strong> <code class="inline-code">DruidDataset</code></p>
+
+      <h2 id="bin-numeric">bin_numeric()</h2>
+      <div class="func-sig">
+        <div class="name">druid.preprocessing.bin_numeric(dataset, column, bins, labels=None)</div>
+        <div class="params">Bin a numeric column into categories using <code>pd.cut()</code>.</div>
+      </div>
+      <p><strong>Returns:</strong> <code class="inline-code">DruidDataset</code></p>
+
+      <!-- ============================== -->
+      <!-- MODELLING                       -->
+      <!-- ============================== -->
+
+      <h2 id="run-experiment">run_experiment()</h2>
+      <div class="func-sig">
+        <div class="name">druid.modelling.experiment.run_experiment(X_train, X_test, y_train, y_test, task_type, dataset=None)</div>
+        <div class="params">Train multiple algorithms and return a ranked leaderboard.</div>
+      </div>
+      <p>Trains 7 sklearn models (Logistic Regression, Random Forest, Gradient Boosting, AdaBoost, Decision Tree, KNN, SGD) plus XGBoost and LightGBM if installed. Returns a dict with <code>leaderboard</code>, <code>best_model</code>, and per-model results.</p>
+
+      <h2 id="classification-summary">classification_summary()</h2>
+      <div class="func-sig">
+        <div class="name">druid.modelling.evaluator.classification_summary(model, X_test, y_test)</div>
+        <div class="params">Generate a full classification report with confusion matrix and ROC curve.</div>
+      </div>
+      <p><strong>Returns:</strong> <code class="inline-code">dict</code> with <code>report</code>, <code>confusion_matrix</code>, and matplotlib figures.</p>
+
+      <h2 id="feature-importance">feature_importance()</h2>
+      <div class="func-sig">
+        <div class="name">druid.modelling.evaluator.feature_importance(model, feature_names, top_n=20)</div>
+        <div class="params">Extract and plot feature importances from tree-based or linear models.</div>
+      </div>
+      <p><strong>Returns:</strong> matplotlib <code class="inline-code">Figure</code></p>
+
+      <!-- ============================== -->
+      <!-- UTILITIES                       -->
+      <!-- ============================== -->
+
+      <h2 id="export-script">export_script()</h2>
+      <div class="func-sig">
+        <div class="name">druid.utils.export_script(dataset, path)</div>
+        <div class="params">Export the dataset's session log as a standalone, reproducible Python script.</div>
+      </div>
+
+      <h2 id="save-dataset">save_dataset() / load_dataset()</h2>
+      <div class="func-sig">
+        <div class="name">druid.utils.save_dataset(dataset, path)</div>
+        <div class="params">Pickle the DruidDataset (DataFrame + metadata + session) for checkpointing.</div>
+      </div>
+      <div class="func-sig">
+        <div class="name">druid.utils.load_dataset(path) &rarr; DruidDataset</div>
+        <div class="params">Reload a saved DruidDataset from a pickle checkpoint.</div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container footer-inner">
+    <p>&copy; 2025 Leke White. MIT License.</p>
+    <ul class="footer-links">
+      <li><a href="https://github.com/Lekewhite01/druid">GitHub</a></li>
+      <li><a href="https://pypi.org/project/druid-ai/">PyPI</a></li>
+      <li><a href="index.html">Home</a></li>
+    </ul>
+  </div>
+</footer>
+
+</body>
+</html>
